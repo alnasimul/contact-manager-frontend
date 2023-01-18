@@ -7,37 +7,61 @@ import ApartmentIcon from "@mui/icons-material/Apartment";
 import AddIcon from "@mui/icons-material/Add";
 import ClearIcon from "@mui/icons-material/Clear";
 import { useFieldArray, useForm } from "react-hook-form";
+import { useEffect, useRef, useState } from "react";
+
 import contactManagerApi from "../../helpers/contactManagerApi";
 import { toast } from "react-toastify";
+import { Edit } from "@mui/icons-material";
 
-
-const ContactForm = ({closeModal}) => {
-  const { register, control, resetField, getValues, handleSubmit, formState: { errors }  } = useForm();
-  const { fields, append,  remove } = useFieldArray({
+const UpdateContactForm = ({ contact, closeModal }) => {
+  const {
+    register,
+    control,
+    resetField,
+    getValues,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  const { fields, append, prepend, remove } = useFieldArray({
     control, // control props comes from useForm (optional: if you are using FormContext)
     name: "numbers", // unique name for your Field Array
     // keyName: "id", default to "id", you can change the key name
   });
 
-  console.log(fields);
+  const { _id, name, email, numbers, company, home } = contact;
+
+  const [data, setData] = useState("");
+
+  // new way to render useEffect once in react 18 version ---------
+
+  const shouldLog = useRef(true)
   
+  useEffect(() => {
+    if(shouldLog.current){
+        shouldLog.current = false
+        prepend(numbers);
+    }
+    },[]);
+
+   // ------------
+
   const onSubmit = (formdata) => {
-    const {contactNo, data, ...rest} = formdata;
-    const filteredData = {...rest}
-    console.log({...rest}, "rest")
+    const { contactNo, data, ...rest } = formdata;
+    const filteredData = { ...rest };
+    console.log({ ...rest }, "rest");
     console.log("submitted");
-    if(filteredData.numbers.length > 0){
+    if (filteredData.numbers.length > 0) {
       try {
-      contactManagerApi.post(`/insertContact`, filteredData).then((res) => {
-        if (res.data) {
-          alert("data inserted successfully");
-          closeModal();
-          window.location.reload()
-        }
-      });
-    } catch (error) {}
-    }else{
-        toast.error('No number added ⚠️')
+        contactManagerApi.patch(`/updateContact/${_id}`, filteredData).then((res) => {
+          if (res.data) {
+            alert("data updated successfully");
+               closeModal();
+               window.location.reload();
+          }
+        });
+      } catch (error) {}
+    } else {
+      toast.error("No number added ⚠️");
     }
   };
 
@@ -53,11 +77,14 @@ const ContactForm = ({closeModal}) => {
           id="filled-hidden-label-small"
           variant="standard"
           className="my-3"
+          defaultValue={name}
           fullWidth
         />
-     </div>
-     {errors.name && <span className="text-danger ms-5">This field is required</span>}
-    <div className="d-flex align-items-center">
+      </div>
+      {errors.name && (
+        <span className="text-danger ms-5">This field is required</span>
+      )}
+      <div className="d-flex align-items-center">
         <EdgesensorLowIcon className="mx-3 mt-1" color="secondary" />
         <TextField
           {...register("contactNo")}
@@ -69,17 +96,17 @@ const ContactForm = ({closeModal}) => {
         />
         <Button
           onClick={() => {
-            append({ value: getValues("contactNo") })
-            clearFiled();
-          }}
+            append({ value: getValues("contactNo")  })
+           clearFiled()}
+        }
           className=""
         >
           <AddIcon className="mx-2 mt-4" color="secondary" />
         </Button>
       </div>
       <div>
-        </div>
-         
+      </div>
+
       {fields.length > 0 && (
         <div className="ms-5 my-3">
           {fields.map((data, index) => (
@@ -109,6 +136,7 @@ const ContactForm = ({closeModal}) => {
           id="filled-hidden-label-small"
           className="my-3"
           variant="standard"
+          defaultValue={email}
           fullWidth
         />
       </div>
@@ -120,6 +148,7 @@ const ContactForm = ({closeModal}) => {
           id="filled-hidden-label-small"
           className="my-3"
           variant="standard"
+          defaultValue={home}
           fullWidth
         />
       </div>
@@ -131,6 +160,7 @@ const ContactForm = ({closeModal}) => {
           id="filled-hidden-label-small"
           className="my-3 "
           variant="standard"
+          defaultValue={company}
           fullWidth
         />
       </div>
@@ -140,10 +170,10 @@ const ContactForm = ({closeModal}) => {
         variant="contained"
         color="secondary"
       >
-        <AddIcon className="mx-2 mb-1" /> <span className="me-4">ADD</span>
+        <Edit className="mx-2 mb-1" /> <span className="me-4">UPDATE</span>
       </Button>
     </form>
   );
 };
 
-export default ContactForm;
+export default UpdateContactForm;

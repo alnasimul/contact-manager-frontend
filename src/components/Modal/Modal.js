@@ -10,7 +10,7 @@ const Modal = ({children, modalIsOpen, closeModal, compact}) => {
             left: '50%',
             right: 'auto',
             width: compact ? '76%' : '50%',
-            height: compact ? '74%' : '65%',
+            height: compact ? '74%' : '75%',
             padding: '20px',
             bottom: 'auto',
             marginRight: '-50%',

@@ -72,7 +72,7 @@ const closeModal = () => {
           bgcolor:'secondary.main'
         }}
        >
-        <AppBar position="static">
+        <AppBar position="static" color="secondary">
           <Toolbar>
             <Button variant="Text" onClick={openModal}>
               <Icon>add_circle</Icon>
@@ -97,7 +97,7 @@ const closeModal = () => {
           </Toolbar>
         </AppBar>
       </Box>
-      <Modal modalIsOpen={modalIsOpen} closeModal={closeModal}><ContactForm/></Modal>
+      <Modal modalIsOpen={modalIsOpen} closeModal={closeModal}><ContactForm closeModal={closeModal}/></Modal>
     </div>
   );
 };
