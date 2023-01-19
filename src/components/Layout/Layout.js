@@ -1,10 +1,10 @@
 import React from 'react';
 import Header from './Header/Header';
 
-const Layout = ({children}) => {
+const Layout = ({children, getSearchResult}) => {
     return (
         <div>
-            <Header/>
+            <Header getSearchResult={getSearchResult}/>
             {children}
         </div>
     );

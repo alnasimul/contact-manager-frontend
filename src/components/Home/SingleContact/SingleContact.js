@@ -24,24 +24,22 @@ const SingleContact = ({ contact }) => {
 
   const { _id, name, email, numbers, company, home } = contact;
 
-  console.log(numbers);
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
 
   const deleteContact = () => {
-    if(window.confirm(`Are you sure to delete ${name} from contact list`)){
-        contactManagerApi.delete(`/deleteContact/${_id}`)
-        .then(res => {
-            if(res.data){
-                toast("Contact deleted successfully 🤙🏻")
-                setTimeout( ()=> {
-                    window.location.reload();
-                },3000)
-            }
-        })
+    if (window.confirm(`Are you sure to delete ${name} from contact list`)) {
+      contactManagerApi.delete(`/deleteContact/${_id}`).then((res) => {
+        if (res.data) {
+          toast("Contact deleted successfully 🤙🏻");
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        }
+      });
     }
-  }
+  };
 
   return (
     <div className="p-3">
@@ -57,10 +55,10 @@ const SingleContact = ({ contact }) => {
           <Typography
             sx={{ width: "82%", color: "text.secondary", flexShrink: 0 }}
           >
-            <h2 className="m-5">
+            <h5 className="m-5">
               {" "}
               <i class="fas fa-user fa-fw me-2"></i> {name}
-            </h2>
+            </h5>
           </Typography>
           <Typography className="m-3" sx={{ color: "text.secondary" }}>
             {numbers.map((number, index) => (
@@ -101,17 +99,23 @@ const SingleContact = ({ contact }) => {
               )}
             </div>
             <div>
-              <Button color="secondary"  onClick={openModal}>
+              <Button color="secondary" onClick={openModal}>
                 <i class="fas fa-pen"></i>
               </Button>{" "}
               <Button color="secondary" onClick={deleteContact}>
-                <i class="fas fa-trash"></i> 
+                <i class="fas fa-trash"></i>
               </Button>
             </div>
           </Typography>
         </AccordionDetails>
       </Accordion>
-      <Modal modalIsOpen={modalIsOpen} closeModal={closeModal}><UpdateContactForm contact={contact} edit={true} closeModal={closeModal}/></Modal>
+      <Modal modalIsOpen={modalIsOpen} closeModal={closeModal}>
+        <UpdateContactForm
+          contact={contact}
+          edit={true}
+          closeModal={closeModal}
+        />
+      </Modal>
     </div>
   );
 };

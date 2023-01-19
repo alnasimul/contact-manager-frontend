@@ -6,10 +6,10 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
-import { Button, Icon } from "@mui/material";
+import { Button, createTheme, Icon, ThemeProvider } from "@mui/material";
 import Modal from "../../Modal/Modal";
 import ContactForm from "../../ContactForm/ContactForm";
-
+import { grey } from "@mui/material/colors";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -53,51 +53,77 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const Header = () => {
-  
-const [modalIsOpen, setIsOpen] = useState(false);
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: {
+      main: grey[900],
+    },
+  },
+});
 
-const openModal = () => {
-  setIsOpen(true);
-};
 
-const closeModal = () => {
-  setIsOpen(false);
-};
+const Header = ({ getSearchResult }) => {
+  const [term, setTerm] = useState("");
+
+  const [modalIsOpen, setIsOpen] = useState(false);
+
+  const openModal = () => {
+    setIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
+  };
+
+  const setSearchData = (termData) => {
+    console.log("termData", termData);
+    getSearchResult(termData);
+  };
+
   return (
     <div>
       <Box
         sx={{
-       
-          bgcolor:'secondary.main'
+          bgcolor: "secondary.main",
         }}
-       >
-        <AppBar position="static" color="secondary">
-          <Toolbar>
-            <Button variant="Text" onClick={openModal}>
-              <Icon>add_circle</Icon>
-            </Button>
-            <Typography
-              variant="h6"
-              noWrap
-              component="div"
-              sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
-            >
-              Contact Manager
-            </Typography>
-            <Search sx={{ m: 1 }}>
-              <SearchIconWrapper>
-                <SearchIcon />
-              </SearchIconWrapper>
-              <StyledInputBase
-                placeholder="Search…"
-                inputProps={{ "aria-label": "search" }}
-              />
-            </Search>
-          </Toolbar>
-        </AppBar>
+      >
+        <ThemeProvider theme={darkTheme}>
+          <AppBar position="static">
+            <Toolbar>
+              <Button variant="Text" onClick={openModal} className="mx-3">
+                <Icon>add_circle</Icon>
+              </Button>
+              <Typography
+                variant="h6"
+                noWrap
+                component="div"
+                sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+              >
+                Contact Manager
+              </Typography>
+              <Search
+                sx={{ m: 1 }}
+                onChange={(e) => {
+                  setTerm(e.target.value);
+                  setSearchData(e.target.value);
+                }}
+              >
+                <SearchIconWrapper>
+                  <SearchIcon />
+                </SearchIconWrapper>
+                <StyledInputBase
+                  placeholder="Search…"
+                  inputProps={{ "aria-label": "search" }}
+                />
+              </Search>
+            </Toolbar>
+          </AppBar>
+        </ThemeProvider>
       </Box>
-      <Modal modalIsOpen={modalIsOpen} closeModal={closeModal}><ContactForm closeModal={closeModal}/></Modal>
+      <Modal modalIsOpen={modalIsOpen} closeModal={closeModal}>
+        <ContactForm closeModal={closeModal} />
+      </Modal>
     </div>
   );
 };
