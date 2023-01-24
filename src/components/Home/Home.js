@@ -72,18 +72,18 @@ const Home = () => {
   const backupContacts = () => {
     contactManagerApi.get(`/backupContacts`).then((res) => {
       if (res.data) {
-        alert("All conatcts backuped successfully");
+       alert("All conatcts backuped successfully");
       }
     });
   };
 
-  const restoreContacts = () => {
-    contactManagerApi.get(`/restoreContacts`).then((res) => {
-      if (res.data) {
-        alert("All contacts restored successfully");
-      }
-    });
-  };
+  // const restoreContacts = () => {
+  //   contactManagerApi.get(`/restoreContacts`).then((res) => {
+  //     if (res.data) {
+  //       alert("All contacts restored successfully");
+  //     }
+  //   });
+  // };
 
   const getContactsBySeclectedCompany = (company) => {
     contactManagerApi
@@ -178,10 +178,10 @@ const Home = () => {
               <FileDownload />
               Backup
             </Button>
-            <Button onClick={restoreContacts}>
+            {/* <Button onClick={restoreContacts}>
               <Restore />
               Restore
-            </Button>
+            </Button> */}
           </ButtonGroup>
         </div>
       </div>
