@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
@@ -8,13 +8,16 @@ import Layout from "../Layout/Layout";
 import "react-toastify/dist/ReactToastify.css";
 import contactManagerApi from "../../helpers/contactManagerApi";
 import SingleContact from "./SingleContact/SingleContact";
-import { FileDownload, Restore } from "@mui/icons-material";
+import { CheckBoxOutlined, FileDownload, Restore, Undo } from "@mui/icons-material";
 import { ButtonGroup } from "@mui/material";
 
 const Home = () => {
   const [search, setSearch] = useState("");
   const [contacts, setContacts] = useState([]);
   const [companies, setCompanies] = useState([]);
+  const [multipleCheckbox, setMultipleCheckbox] = useState(false);
+  const [selectedContacts, setSelectedContacts] = useState([])
+
 
   const getSearchResult = (searchTerm) => {
     setSearch(searchTerm);
@@ -62,6 +65,8 @@ const Home = () => {
     // }
   }, []);
 
+
+
  // const shouldLog = useRef(true);
 
   const backupContacts = () => {
@@ -87,28 +92,50 @@ const Home = () => {
   };
 
   const setContactsByCompany = (company, numbers) => {
-    console.log(company);
 
     getContactsBySeclectedCompany(company);
-
-    //console.log(contacts, "contacts")
 
     let filteredContacts = numbers.filter(
       (contact) => contact.company === company
     );
 
-    // console.log("running")
-
-    // console.log(filteredContacts, "running")
 
     setContacts(filteredContacts);
   };
 
-  console.log(contacts, "contacts");
+ const deleteContacts = () => {
+  if(selectedContacts.length > 0) {
+    if(window.confirm(`Are you sure want to delete the selected ${selectedContacts.length} contacts?`)){
+      deleteMultipleContacts(selectedContacts)
+     }
+  }else{
+    toast.error("No contact selected ⚠️")
+  }
+ }
 
-  // console.log(search, "Search")
+  const deleteMultipleContacts = () => {
+    contactManagerApi.delete(`/deleteMultipleContacts/${[...selectedContacts]}`)
+    .then( res => {
+      if(res.data){
+        toast("Contacts deleted successfully")
+        setTimeout(() => {
+          window.location.reload()
+        },3000)
+      }
+    })
+  }
 
-  console.log(companies, "companies");
+  const getId = (id, checked) => {
+    if(checked){
+     setSelectedContacts([ ...selectedContacts, id])
+    }else {
+      setSelectedContacts(selectedContacts.filter( el => el!== id))
+    }
+  }
+ 
+ console.log(selectedContacts,"selectedContacts")
+
+  
   return (
     <Layout getSearchResult={getSearchResult}>
       <ToastContainer />
@@ -160,8 +187,10 @@ const Home = () => {
       </div>
 
       <div className="m-5 p-3">
+        {multipleCheckbox ? <Button variant="outlined" onClick={() => setMultipleCheckbox(false)}> <Undo className="mx-2 mb-1"/> Undo Mulitiple</Button> : <Button variant="outlined" onClick={() => setMultipleCheckbox(true)}> <CheckBoxOutlined className="mx-2 mb-1"/> Select Multiple</Button> }
+        {multipleCheckbox && <Button variant="contained" className="mx-2" onClick= {deleteContacts}> {selectedContacts.length} DELETE </Button>}
         {contacts.map((contact) => (
-          <SingleContact contact={contact} key={contact._id}></SingleContact>
+          <SingleContact contact={contact} key={contact._id} multipleCheckbox={multipleCheckbox} getId = {getId} ></SingleContact>
         ))}
       </div>
     </Layout>
